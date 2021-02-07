@@ -1,0 +1,5 @@
+torch
+torchvision
+comet-ml
+pytorch-lightning
+torchsummary
