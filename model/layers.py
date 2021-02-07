@@ -3,14 +3,29 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchsummary
 
-
-class SConv2d(nn.Module):
-    def __init__(self, out_channels, kernel_size, stride=1, padding=0, bias=True):
-        super(SConv2d, self).__init__()
-        self.conv = nn.Conv2d(1, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
+class Lambda(nn.Module):
+    def __init__(self, lambda_):
+        super(Lambda, self).__init__()
+        self.lambda_ = lambda_
 
     def forward(self, x):
-        out = torch.sum(x, dim=1, keepdim=True) # sum across channels
+        out = self.lambda_(x)
+        return out
+
+class SConv2d(nn.Module):
+    def __init__(self, out_channels, kernel_size, stride=1, padding=0, bias=True, mode='avg'):
+        super(SConv2d, self).__init__()
+        self.conv = nn.Conv2d(1, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
+        if mode=='sum':
+            lambda_ = lambda x: torch.sum(x, dim=1, keepdim=True)
+        elif mode=='avg':
+            lambda_ = lambda x: torch.mean(x, dim=1, keepdim=True)
+        else:
+            raise NotImplementedError()
+        self.aggr = Lambda(lambda_)
+
+    def forward(self, x):
+        out = self.aggr(x)
         out = self.conv(out)
         return out
 
