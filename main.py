@@ -7,7 +7,7 @@ import sys, os
 from utils import get_dataset, get_model
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--dataset", default="c10", type=str)
+parser.add_argument("--dataset", default="c10", type=str, help="[c10, c100]")
 parser.add_argument("--model", default="spreact18", type=str, help="[spreact18, preact18]")
 parser.add_argument("--batch-size", default=128, type=int)
 parser.add_argument("--eval-batch-size", default=1024, type=int)

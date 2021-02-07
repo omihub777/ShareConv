@@ -35,6 +35,15 @@ def get_dataset(args):
         train_transform, test_transform = get_transform(args)
         train_ds = torchvision.datasets.CIFAR10(data_path, train=True, transform=train_transform, download=True)
         test_ds = torchvision.datasets.CIFAR10(data_path, train=False, transform=test_transform, download=True)
+    elif args.dataset=='c100':
+        args.in_c=3
+        args.num_classes = 100
+        args.size=32
+        args.padding=4
+        args.mean,args.std = [0.5071, 0.4867, 0.4408], [0.2675, 0.2565, 0.2761]
+        train_transform, test_transform = get_transform(args)
+        train_ds = torchvision.datasets.CIFAR100(data_path, train=True, transform=train_transform, download=True)
+        test_ds = torchvision.datasets.CIFAR100(data_path, train=False, transform=test_transform, download=True)
     else:
         raise NotImplementedError()
 
