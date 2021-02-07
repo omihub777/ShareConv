@@ -7,7 +7,7 @@ import sys, os
 sys.path.append(os.path.abspath("model"))
 
 def get_transform(args):
-    if args.dataset=='c10':
+    if args.dataset in ['c10','c100']:
         train_transform = transforms.Compose([
             transforms.RandomCrop(args.size, padding=args.padding),
             transforms.RandomHorizontalFlip(),
@@ -17,7 +17,7 @@ def get_transform(args):
 
         test_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2470, 0.2435, 0.2616])
+            transforms.Normalize(mean=args.mean, std=args.std)
         ])
     else:
         raise NotImplementedError()
