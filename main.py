@@ -21,6 +21,7 @@ parser.add_argument("--api-key", required=True)
 parser.add_argument("--gamma", default=0.1, type=float)
 parser.add_argument("--milestones", default=[100, 150], nargs="+", type=int)
 parser.add_argument("--weight-decay", default=1e-4, type=float)
+parser.add_argument("--aggr-mode", default="avg", type=str)
 args = parser.parse_args()
 args.num_gpus = torch.cuda.device_count() if torch.cuda.is_available() else 0
 args.num_workers = 8 * args.num_gpus if args.num_gpus else 8

@@ -53,7 +53,7 @@ def get_dataset(args):
 def get_model(args):
     if args.model == 'spreact18':
         from model.spreact18 import SPreAct18
-        model = SPreAct18(args.in_c, args.num_classes)
+        model = SPreAct18(args.in_c, args.num_classes, aggr_mode=args.aggr_mode)
     elif args.model == 'preact18':
         from model.preact18 import PreAct18
         model = PreAct18(args.in_c, args.num_classes)

@@ -13,12 +13,12 @@ class Lambda(nn.Module):
         return out
 
 class SConv2d(nn.Module):
-    def __init__(self, out_channels, kernel_size, stride=1, padding=0, bias=True, mode='avg'):
+    def __init__(self, out_channels, kernel_size, stride=1, padding=0, bias=True, aggr_mode='avg'):
         super(SConv2d, self).__init__()
         self.conv = nn.Conv2d(1, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
-        if mode=='sum':
+        if aggr_mode=='sum':
             lambda_ = lambda x: torch.sum(x, dim=1, keepdim=True)
-        elif mode=='avg':
+        elif aggr_mode=='avg':
             lambda_ = lambda x: torch.mean(x, dim=1, keepdim=True)
         else:
             raise NotImplementedError()
@@ -40,9 +40,9 @@ class ConvBlock(nn.Module):
         return out
 
 class SConvBlock(nn.Module):
-    def __init__(self, in_c, out_c, k=3, s=1, p=1, bias=False):
+    def __init__(self, in_c, out_c, k=3, s=1, p=1, bias=False, aggr_mode="avg"):
         super(SConvBlock, self).__init__()
-        self.conv1 = SConv2d(out_c, kernel_size=k, stride=s, padding=p, bias=bias)
+        self.conv1 = SConv2d(out_c, kernel_size=k, stride=s, padding=p, bias=bias, aggr_mode=aggr_mode)
         self.bn1 = nn.BatchNorm2d(out_c)
         
     def forward(self, x):
@@ -72,12 +72,12 @@ class PreActBlock(nn.Module):
 
 class SPreActBlock(nn.Module):
     """PreActBlock using Shared Convolutin"""
-    def __init__(self, in_c, out_c, k=3, s=1, p=1, bias=False):
+    def __init__(self, in_c, out_c, k=3, s=1, p=1, bias=False, aggr_mode="avg"):
         super(SPreActBlock, self).__init__()
         self.bn1 = nn.BatchNorm2d(in_c)
-        self.conv1 = SConv2d(out_c, kernel_size=k, stride=s, padding=p, bias=bias)
+        self.conv1 = SConv2d(out_c, kernel_size=k, stride=s, padding=p, bias=bias, aggr_mode=aggr_mode)
         self.bn2 = nn.BatchNorm2d(out_c)
-        self.conv2 = SConv2d(out_c, kernel_size=k, stride=1, padding=p, bias=bias)
+        self.conv2 = SConv2d(out_c, kernel_size=k, stride=1, padding=p, bias=bias, aggr_mode=aggr_mode)
 
         if s!=1 or in_c!=out_c:
             self.skip = SConv2d(out_c, kernel_size=1,stride=s, bias=False)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     b,c,h,w = 4, 16, 32, 32
     x = torch.randn(b, c, h, w)
     out_c, s = 64, 2
-    blc = SPreActBlock(c, out_c, s=s)
+    blc = SPreActBlock(c, out_c, s=s, aggr_mode="avg")
     # blc = PreActBlock(c, out_c, s=s)
     out = blc(x)
     torchsummary.summary(blc, (c,h,w))

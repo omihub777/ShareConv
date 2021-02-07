@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath("model"))
 from layers import ConvBlock, SPreActBlock
 
 class SPreAct18(nn.Module):
-    def __init__(self, in_c, num_classes, bias=False):
+    def __init__(self, in_c, num_classes, bias=False, aggr_mode='avg'):
         super(SPreAct18, self).__init__()
         self.blc1 = ConvBlock(3, 64)
 
